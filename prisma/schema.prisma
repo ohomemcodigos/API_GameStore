@@ -1,15 +1,48 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// MODELO 1: JOGO
+model Game {
+  id          Int      @id @default(autoincrement())
+  title       String   @unique
+  description String?
+  genre       String
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  purchases   Purchase[] // Relação: Um jogo pode estar em muitas compras
+}
+
+// MODELO 2: USUÁRIO
+model User {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  name        String
+  password    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  purchases   Purchase[] // Relação: Já que o usuário pode ter muitas compras
+}
+
+// MODELO 3: COMPRA (com relação a Jogo e Usuário)
+model Purchase {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  gameId    Int
+  purchasedAt DateTime @default(now())
+
+  // Definindo as chaves estrangeiras e a relação
+  user User @relation(fields: [userId], references: [id])
+  game Game @relation(fields: [gameId], references: [id])
+
+  @@map("purchases") // O nome que ficará tabela no banco de dados
 }
