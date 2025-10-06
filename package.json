@@ -8,7 +8,6 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts"
-
   },
   "repository": {
     "type": "git",
@@ -23,12 +22,14 @@
   },
   "homepage": "https://github.com/ohomemcodigos/API_GameStore#readme",
   "dependencies": {
+    "@prisma/client": "^6.16.3",
     "express": "^5.1.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.7.0",
     "nodemon": "^3.1.10",
+    "prisma": "^6.16.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
