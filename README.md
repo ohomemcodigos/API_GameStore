@@ -33,10 +33,44 @@ Siga as instruções abaixo para configurar e rodar o projeto em seu ambiente lo
 
 -   [Node.js](https://nodejs.org/en/) (versão 16 ou superior)
 -   [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
--   Uma instância do [PostgreSQL](https://www.postgresql.org/) rodando localmente ou via Docker.
+-   [Docker](https://www.docker.com/products/docker-desktop/) e Docker Compose
 -   [Git](https://git-scm.com/)
 
-### Instalação
+### Configurando o Banco de Dados com Docker
+
+Para simplificar a configuração, este projeto utiliza Docker para rodar o banco de dados PostgreSQL.
+
+1.  **Crie o arquivo `docker-compose.yml`:** Na raiz do projeto, crie um arquivo com este nome e cole o seguinte conteúdo:
+
+    ```yaml
+    version: '3.8'
+
+    services:
+      postgres:
+        image: postgres:14-alpine
+        container_name: game_store_db
+        restart: always
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: mysecretpassword
+          POSTGRES_DB: game_store
+        ports:
+          - "5432:5432"
+        volumes:
+          - postgres_data:/var/lib/postgresql/data
+
+    volumes:
+      postgres_data:
+    ```
+
+2.  **Inicie o Container:** No terminal, na raiz do projeto, execute:
+
+    ```bash
+    docker-compose up -d
+    ```
+    O banco de dados agora está rodando em segundo plano.
+
+### Instalação da Aplicação
 
 1.  **Clone o repositório:**
     ```bash
@@ -55,15 +89,14 @@ Siga as instruções abaixo para configurar e rodar o projeto em seu ambiente lo
 
 4.  **Configure as variáveis de ambiente:**
     -   Crie uma cópia do arquivo `.env.example` e renomeie para `.env`.
-    -   Abra o arquivo `.env` e substitua os valores das variáveis com as suas credenciais do banco de dados PostgreSQL.
+    -   Abra o arquivo `.env` e preencha a `DATABASE_URL` para conectar ao banco no Docker.
 
-    **`.env.example`:**
     ```
-    DATABASE_URL="postgresql://USUARIO:SENHA@HOST:PORTA/NOME_DO_BANCO"
+    DATABASE_URL="postgresql://postgres:mysecretpassword@localhost:5432/game_store"
     ```
 
 5.  **Aplique as migrações do Prisma:**
-    -   Este comando irá criar as tabelas no seu banco de dados com base no schema definido.
+    -   Este comando irá criar as tabelas no seu banco de dados que está no Docker.
     ```bash
     npx prisma migrate dev
     ```
@@ -73,7 +106,7 @@ Siga as instruções abaixo para configurar e rodar o projeto em seu ambiente lo
     npm run dev
     ```
 
-## Uso / Endpoints da API
+## 📖 Uso / Endpoints da API
 
 A documentação completa e interativa dos endpoints está disponível via Swagger UI. Após iniciar o servidor, acesse o seguinte endereço no seu navegador:
 
