@@ -8,10 +8,10 @@ export const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:3000', // A URL base da sua API
+        url: 'http://localhost:3000', // A URL base da API
       },
     ],
-    // Adicionamos os 'components' para definir schemas reutilizáveis
+    // Criamdos os 'components' para definir schemas reutilizáveis
     components: {
         schemas: {
             Game: {

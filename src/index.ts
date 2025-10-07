@@ -7,8 +7,8 @@ import { swaggerOptions } from './swaggerOptions'; // Nossas opções
 
 //Importação das Rotas
 import gameRoutes from './routes/gameRoutes';
-//import userRoutes from './routes/userRoutes';
-//import purchaseRoutes from './routes/purchaseRoutes';
+import userRoutes from './routes/userRoutes';
+import purchaseRoutes from './routes/purchaseRoutes';
 
 //Inicialização do app e do Prisma
 const app = express();
@@ -29,10 +29,11 @@ app.get('/', (req, res) => {
 
 
 app.use('/api/games', gameRoutes);
-//app.use('/api/users', userRoutes);
-//app.use('/api/purchases', purchaseRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/purchases', purchaseRoutes);
 
 //Inicia o servidor
 app.listen(port, () => {
   console.log(`Servidor ligou! Ele está rodando em http://localhost:${port}`);
+  console.log(`Verifique a Documentação via Swagger por aqui: http://localhost:${port}/api-docs/`)
 });
