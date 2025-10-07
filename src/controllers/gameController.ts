@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../index";
+import { ZodError } from "zod"; // Importando o type do erro do Zod
+import { createGameSchema, updateGameSchema } from "../validators/gameValidator";
 
 
 /* -- Montando o CRUD do gameRoutes -- */
@@ -37,11 +39,15 @@ export const getGamesById = async (req: Request, res: Response) => {
 // Novo jogo
 export const createGame = async (req: Request, res: Response) => {
     try {
+        const validatedData = createGameSchema.parse(req.body); // Validação
         const newGame = await prisma.game.create({
-            data: req.body,
+            data: validatedData,
         });
         res.status(201).json(newGame); // Sucesso!
     }catch (error) {
+        if (error instanceof ZodError) {
+            return res.status(400).json({ error:"Dados inválidos.", details: error.issues });
+        }
         res.status(500).json( { error: "Erro ao criar jogo." } ); // Falha...
     }
 };
