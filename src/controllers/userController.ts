@@ -1,13 +1,16 @@
 import { Request, Response } from 'express';
 import { prisma } from '../index';
+import { ZodError } from 'zod'; // Importando o type do erro do Zod
+import { registerUserSchema, updateUserSchema } from '../validators/userValidator';
 
 
-/* -- Montando o userRoutes -- */
+/* -- Montando CRUD o userRoutes -- */
 
 // POST
 // Novo usuário
 export const registerUser = async (req: Request, res: Response) => {
     try {
+        const validatedData = registerUserSchema.parse(req.body); // Validação
         const { name, email, password } = req.body; // Pega o nome, o email e a senha digitados pelo usuário
 
         if ( !name || !email || !password ) { // Diz que, caso um dos campos estejam vazios, retornará um erro
@@ -28,8 +31,12 @@ export const registerUser = async (req: Request, res: Response) => {
 
         const { password: _, ...userWithoutPassword } = newUser;
         res.status(201).json(userWithoutPassword); // Sucesso!
+
     } catch (error) {
-        res.status(500).json({ error: "Erro ao cadastrar o usuário." }); // Falha...
+        if (error instanceof ZodError) {
+            return res.status(400).json({ error: "Dados de registro inválidos", details: error.issues }); // Falha...
+        }
+                res.status(500).json({ error: "Erro ao cadastrar o usuário." }); // Falha...
     }
 };
 
@@ -64,5 +71,70 @@ export const loginUser = async (req: Request, res: Response) => {
 
     }catch (error) {
         res.status(500).json({ error: "Erro ao realizar Login." }); // Falha...
+    }
+}
+// GET
+// Usuário por ID
+export const getUserById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const user = await prisma.user.findUnique({
+            where: { id: parseInt(id) },
+        });
+        if (!user){
+            return res.status(404).json({ error: "Usuário não encontrado." }); // Falha...
+        }
+
+        // Remove a senha antes de enviar a resposta
+        const { password: _, ...userWithoutPassword } = user;
+        res.status(200).json(userWithoutPassword); // Sucesso!
+
+    }catch(error) {
+        res.status(500).json({ error: "Erro ao buscar usuário." }); // Falha...
+    }
+};
+
+// PUT
+// Atualizar user
+export const updateUser = async (req: Request, res: Response) => {
+    try{
+        const { id } = req.params;
+        const validatedData = updateUserSchema.parse(req.body);
+
+        const updatedUser = await prisma.user.update({
+            where: { id: parseInt(id) },
+            data: validatedData,
+        });
+
+        const { password: _, ...userWithoutPassword } = updatedUser;
+        res.status(200).json(userWithoutPassword);
+
+    } catch (error) {
+        if (error instanceof ZodError) {
+            return res.status(400).json({ error: "Dados de atualização inválidos", details: error.issues }); // Falha...
+        }
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === "P2025") {
+            return res.status(404).json({ error: "Usuário não encontrado para ser atualizado." }); // Falha...
+        }
+        res.status(500).json({ error: "Erro ao atualizar usuário." }); // Falha...
+    }
+};
+
+// DELETE
+// Usuário
+export const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await prisma.user.delete({
+            where: { id: parseInt(id) },
+        });
+
+        res.status(204).send(); // Sucesso, sem conteúdo
+
+    } catch (error) {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === "P2025") {
+            return res.status(404).json({ error: "Usuário não encontrado para ser deletado." }); // Falha...
+        }
+        res.status(500).json({ error: "Erro ao deletar usuário." }); // Falha...
     }
 };

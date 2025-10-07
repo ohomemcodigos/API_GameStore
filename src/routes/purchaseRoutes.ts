@@ -1,13 +1,19 @@
 import { Router } from 'express';
-import { createPurchase, getUserPurchases } from '../controllers/purchaseController';
+import { 
+  createPurchase, 
+  getPurchaseById,
+  getUserPurchases,
+  updatePurchase,
+  deletePurchase 
+} from '../controllers/purchaseController';
 
 const router = Router();
 
 /**
  * @swagger
  * tags:
- *   name: Purchases
- *   description: API para gerenciamento de compras
+ *   - name: Purchases
+ *     description: API para gerenciamento de compras
  */
 
 /**
@@ -35,10 +41,33 @@ const router = Router();
  *     responses:
  *       201:
  *         description: Compra registrada com sucesso
+ *       400:
+ *         description: Dados inválidos
  *       404:
  *         description: Usuário ou Jogo não encontrado
  */
 router.post('/', createPurchase);
+
+/**
+ * @swagger
+ * /api/purchases/{id}:
+ *   get:
+ *     summary: Retorna uma compra específica pelo seu ID
+ *     tags: [Purchases]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: O ID da compra
+ *     responses:
+ *       200:
+ *         description: Compra encontrada com sucesso
+ *       404:
+ *         description: Compra não encontrada
+ */
+router.get('/:id', getPurchaseById);
 
 /**
  * @swagger
@@ -56,29 +85,60 @@ router.post('/', createPurchase);
  *     responses:
  *       200:
  *         description: Histórico de compras retornado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   purchaseId:
- *                     type: integer
- *                     description: ID da compra
- *                   gameId:
- *                     type: integer
- *                     description: ID do jogo comprado
- *                   gameTitle:
- *                     type: string
- *                     description: Título do jogo
- *                   purchaseDate:
- *                     type: string
- *                     format: date-time
- *                     description: Data da compra
- *       404:
- *         description: Usuário não encontrado ou sem compras registradas
  */
 router.get('/user/:userId', getUserPurchases);
+
+/**
+ * @swagger
+ * /api/purchases/{id}:
+ *   put:
+ *     summary: Atualiza uma compra pelo ID
+ *     tags: [Purchases]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: O ID da compra
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *               gameId:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Compra atualizada com sucesso
+ *       404:
+ *         description: Compra não encontrada
+ */
+router.put('/:id', updatePurchase);
+
+/**
+ * @swagger
+ * /api/purchases/{id}:
+ *   delete:
+ *     summary: Deleta uma compra pelo ID
+ *     tags: [Purchases]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: O ID da compra
+ *     responses:
+ *       204:
+ *         description: Compra deletada com sucesso
+ *       404:
+ *         description: Compra não encontrada
+ */
+router.delete('/:id', deletePurchase);
 
 export default router;
