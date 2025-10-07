@@ -106,7 +106,7 @@ Para simplificar a configuração, este projeto utiliza Docker para rodar o banc
     npm run dev
     ```
 
-## 📖 Uso / Endpoints da API
+## Uso / Endpoints da API
 
 A documentação completa e interativa dos endpoints está disponível via Swagger UI. Após iniciar o servidor, acesse o seguinte endereço no seu navegador:
 
@@ -143,3 +143,4 @@ model Purchase {
 ```
 # Licença
 Este projeto está sob a licença MIT.
+
