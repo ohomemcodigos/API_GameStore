@@ -2,7 +2,7 @@
 
 > Uma API RESTful robusta para gerenciar uma plataforma de venda de jogos online, desenvolvida com Node.js, Express, TypeScript e Prisma.
 
-## Descrição do Projeto
+## Sobre o Projeto
 
 Este projeto consiste no desenvolvimento do backend para uma loja de jogos digitais. A API permite o gerenciamento completo de três recursos principais: Jogos, Usuários e Compras. A arquitetura foi estruturada para ser escalável e organizada, separando as responsabilidades em rotas, controllers e validadores de dados.
 
@@ -143,4 +143,5 @@ model Purchase {
 ```
 # Licença
 Este projeto está sob a licença MIT.
+
 
